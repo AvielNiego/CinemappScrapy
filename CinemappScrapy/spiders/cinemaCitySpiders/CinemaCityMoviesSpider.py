@@ -12,7 +12,7 @@ from CinemappScrapy.spiders.globalSpiders.imdb_api import add_imdb_data_to_movie
 
 
 class MovieSpider(scrapy.Spider):
-    name = 'm'
+    name = 'cc_m'
 
     CINEMA_CITY_MOBILE_HOST = "http://m.cinema-city.co.il"
     MOVIES_URL = CINEMA_CITY_MOBILE_HOST + "/refreshParam"
