@@ -2,7 +2,7 @@ from CinemappScrapy.spiders.globalSpiders.TheaterSpiser import TheaterSpider
 
 
 class CinemaCityTheaterSpider(TheaterSpider):
-    name = "cc_t"
+    name = "CinemaCity Theater Spider"
 
     def get_host(self):
         return "http://cinema-city.co.il"
