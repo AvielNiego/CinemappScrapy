@@ -15,7 +15,7 @@ from CinemappScrapy.spiders.yesPlanetSpiders.cookie_value import cookie
 
 
 class YesPlanetMovieSpider(scrapy.Spider):
-    name = "YesPlanet Movies Spider"
+    name = "YesPlanet_Movies_Spider"
 
     HOST = "http://www.yesplanet.co.il"
 

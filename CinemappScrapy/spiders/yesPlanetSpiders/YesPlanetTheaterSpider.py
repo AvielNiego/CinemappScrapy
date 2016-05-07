@@ -3,7 +3,7 @@ from CinemappScrapy.spiders.yesPlanetSpiders.cookie_value import cookie
 
 
 class YesPlanetTheaterSpider(TheaterSpider):
-    name = "YesPlanet Theater Spider"
+    name = "YesPlanet_Theater_Spider"
 
     def get_host(self):
         return "http://www.yesplanet.co.il"
