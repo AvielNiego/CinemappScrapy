@@ -1,4 +1,4 @@
-from CinemappScrapy.spiders.globalSpiders.TheaterSpiser import TheaterSpider
+from CinemappScrapy.spiders.globalSpiders.TheaterSpider import TheaterSpider
 
 
 class CinemaCityTheaterSpider(TheaterSpider):
