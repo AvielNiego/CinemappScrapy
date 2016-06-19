@@ -9,7 +9,6 @@ from scrapy.http import Response
 from scrapy.loader import ItemLoader
 
 from CinemappScrapy.items import MovieItem
-from CinemappScrapy.spiders.globalSpiders import imdb_api
 from CinemappScrapy.spiders.globalSpiders.imdb_api import add_imdb_data_to_movie
 from CinemappScrapy.spiders.yesPlanetSpiders.cookie_value import cookie
 
@@ -17,7 +16,7 @@ from CinemappScrapy.spiders.yesPlanetSpiders.cookie_value import cookie
 class YesPlanetMovieSpider(scrapy.Spider):
     name = "YesPlanet_Movies_Spider"
 
-    HOST = "http://www.yesplanet.co.il"
+    HOST = "http://django-env.wpcqmjpmpv.us-west-2.elasticbeanstalk.com/yesplanet/home"
 
     def start_requests(self):
         request = Request(self.HOST, callback=self.parse, cookies=cookie)
@@ -27,43 +26,32 @@ class YesPlanetMovieSpider(scrapy.Spider):
         """
         :type response: Response
         """
-        for movie_div_info in response.xpath("//*[@id='layer_1_0_110']/div[24]/div/ul/*/div"):
-            movie_data_url = movie_div_info.xpath("@data-feature_url").extract_first()
+        for movie_div_info in response.xpath('//*[@class="featuresCarouselExtended"]/div[2]/div/div[1]/ul/li/div'):
+            print "loop!!"
             movie_id = json.loads(movie_div_info.xpath("@data-info").extract_first(default='{"distribcode": "1"}'))["distribcode"]
-            yield Request(self.HOST + movie_data_url, callback=self.parse_movie, meta={"movie_id": movie_id})
+            movie_data_url = movie_div_info.xpath("@data-feature_url").extract_first()
+            yield self.parse_movie(movie_id, movie_data_url)
 
-    def parse_movie(self, response):
-        """
-        :type response: Response
-        """
-        l = ItemLoader(item=MovieItem(), response=response)
-        l.add_value("movie_id", response.meta["movie_id"])
-        l.add_value("year", self.get_year(response))
-        l.add_value("eng_title", self.get_end_title(response))
-        l.add_xpath("genre", "//*[@id='layer_1_0_0']/div[6]/div/div/div[5]/div[1]/div[1]/div[2]/text()")
-        l.add_xpath("poster_url", "//*[@id='layer_1_0_0']/div[6]/div/div/div[4]/div/div/img/@src")
-        l.add_xpath("age_limit", "//*[@id='layer_1_0_0']/div[6]/div/div/div[5]/div[1]/div[4]/div[2]/text()")
-        l.add_xpath("length", "//*[@id='layer_1_0_0']/div[6]/div/div/div[5]/div[1]/div[2]/div[2]/text()")
-        l.add_xpath("summary", "//*[@id='layer_1_0_0']/div[6]/div/div/div[5]/div[2]/p[2]/text()")
-        l.add_xpath("trailer", "//iframe[@class='youtube-player']/@src")
-        l.add_xpath("title", "//*[@id='layer_1_0_0']/div[6]/div/div/div[3]/text()")
-        return Request(imdb_api.get_imdb_api_query(self.get_end_title(response)),
-                       meta={"movie_item": l.load_item()}, callback=self.imdb_api_parser)
+    def parse_movie(self, movie_id, movie_data_url):
+        l = ItemLoader(item=MovieItem())
+        l.add_value("movie_id", movie_id)
+        l.add_value("year", "")
+        l.add_value("eng_title", self.get_end_title(movie_data_url))
+        l.add_value("genre", "")
+        l.add_value("poster_url", "")
+        l.add_value("age_limit", "")
+        l.add_value("length", "")
+        l.add_value("summary", "")
+        l.add_value("trailer", "")
+        l.add_value("title", "")
+        l.add_value("poster_url", "")
+        l.add_value("imdb_rating", "")
+        l.add_value("imdb_rating", "")
+        l.add_value("genre", "")
+        return l.load_item()
 
-    def get_year(self, response):
-        """
-        :type response: Response
-        """
-        year_and_country = response.xpath("//*[@id='layer_1_0_0']/div[6]/div/div/div[5]/div[1]/div[7]/div[2]").extract_first(default="")
-        year = int(filter(str.isdigit, str(year_and_country)))
-        return year
-
-    def get_end_title(self, response):
-        """
-        :type response: Response
-        """
-        # From the url. Decode the movie name
-        return urllib.unquote(response.url.rsplit('/', 1)[-1])
+    def get_end_title(self, url):
+        return url.split('/')[-1]
 
     def imdb_api_parser(self, response):
         """
