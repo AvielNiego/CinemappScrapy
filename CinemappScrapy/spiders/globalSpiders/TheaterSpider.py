@@ -57,6 +57,8 @@ class TheaterSpider(scrapy.Spider):
         if places_api_data["status"] == "OK":
             api_result = places_api_data['results'][0]
             theater["location"] = self.get_location(api_result)
+        else:
+            theater["location"] = {'lat': "0", 'lng': "0"}
 
     def get_location(self, api_result):
         return {'lat': api_result['geometry']['location']['lat'], 'lng': api_result['geometry']['location']['lng']}
