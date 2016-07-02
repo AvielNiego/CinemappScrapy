@@ -34,7 +34,8 @@ class MovieSpider(scrapy.Spider):
 
     def start_requests(self):
         request = FormRequest(self.MOVIES_URL,
-                              formdata={"refreshFlg": "1", "timeStamp": str((int(round(time.time() * 1000))))}, callback=self.parse)
+                              formdata={"refreshFlg": "1", "timeStamp": str((int(round(time.time() * 1000))))},
+                              callback=self.parse)
         return [request]
 
     def parse(self, response):
@@ -80,7 +81,8 @@ class MovieSpider(scrapy.Spider):
         movie["eng_title"] = self.get_eng_title(response)
         movie["summary"] = self.get_summary(response)
         movie["trailer"] = self.get_trailer(response)
-        yield Request(get_imdb_api_query(movie["eng_title"]), callback=self.imdb_api_parser, meta={"movie": movie}, dont_filter=True)
+        yield Request(get_imdb_api_query(movie["eng_title"]), callback=self.imdb_api_parser, meta={"movie": movie},
+                      dont_filter=True)
 
     def get_summary(self, response):
         """
