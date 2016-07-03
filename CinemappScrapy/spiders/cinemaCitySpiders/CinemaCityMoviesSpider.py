@@ -8,7 +8,7 @@ from scrapy.http import Request
 from scrapy.http import Response
 
 from CinemappScrapy.items import MovieItem
-from CinemappScrapy.spiders.globalSpiders.imdb_api import add_imdb_data_to_movie, get_imdb_api_query
+from CinemappScrapy.spiders.globalSpiders.imdb_api import ImdbRequest
 
 
 class MovieSpider(scrapy.Spider):
@@ -31,6 +31,7 @@ class MovieSpider(scrapy.Spider):
     def __init__(self, *a, **kw):
         super(MovieSpider, self).__init__(*a, **kw)
         self._categories = []
+        self._imdb_request = ImdbRequest()
 
     def start_requests(self):
         request = FormRequest(self.MOVIES_URL,
@@ -81,8 +82,7 @@ class MovieSpider(scrapy.Spider):
         movie["eng_title"] = self.get_eng_title(response)
         movie["summary"] = self.get_summary(response)
         movie["trailer"] = self.get_trailer(response)
-        yield Request(get_imdb_api_query(movie["eng_title"]), callback=self.imdb_api_parser, meta={"movie": movie},
-                      dont_filter=True)
+        yield self._imdb_request.get_request(movie)
 
     def get_summary(self, response):
         """
@@ -107,12 +107,3 @@ class MovieSpider(scrapy.Spider):
             :type response: Response
         """
         return " ".join(response.css(".popup_feature_adname::text").extract()).strip()
-
-    def imdb_api_parser(self, response):
-        """
-        :type response: Response
-        """
-        imdb_data = json.loads(response.body)
-        movie = response.meta["movie"]
-        add_imdb_data_to_movie(imdb_data, movie)
-        yield movie

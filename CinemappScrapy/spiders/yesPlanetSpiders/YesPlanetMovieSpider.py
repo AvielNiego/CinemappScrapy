@@ -9,7 +9,6 @@ from scrapy.http import Response
 from scrapy.loader import ItemLoader
 
 from CinemappScrapy.items import MovieItem
-from CinemappScrapy.spiders.globalSpiders.imdb_api import add_imdb_data_to_movie
 from CinemappScrapy.spiders.yesPlanetSpiders.cookie_value import cookie
 
 
@@ -52,12 +51,3 @@ class YesPlanetMovieSpider(scrapy.Spider):
 
     def get_end_title(self, url):
         return url.split('/')[-1]
-
-    def imdb_api_parser(self, response):
-        """
-        :type response: Response
-        """
-        imdb_data = json.loads(response.body)
-        movie = response.meta["movie_item"]
-        add_imdb_data_to_movie(imdb_data, movie)
-        yield movie
