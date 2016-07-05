@@ -1,7 +1,5 @@
 import json
 
-import urllib
-
 import scrapy
 
 from scrapy import Request
@@ -26,8 +24,8 @@ class YesPlanetMovieSpider(scrapy.Spider):
         :type response: Response
         """
         for movie_div_info in response.xpath('//*[@class="featuresCarouselExtended"]/div[2]/div/div[1]/ul/li/div'):
-            print "loop!!"
-            movie_id = json.loads(movie_div_info.xpath("@data-info").extract_first(default='{"distribcode": "1"}'))["distribcode"]
+            movie_id = json.loads(movie_div_info.xpath("@data-info").extract_first(default='{"distribcode": "1"}'))[
+                "distribcode"]
             movie_data_url = movie_div_info.xpath("@data-feature_url").extract_first()
             yield self.parse_movie(movie_id, movie_data_url)
 

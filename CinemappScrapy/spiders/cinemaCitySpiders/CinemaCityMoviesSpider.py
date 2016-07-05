@@ -26,7 +26,7 @@ class MovieSpider(scrapy.Spider):
     CAT_CHILDREN = u"ילדים"
     CAT_DISPLAYS = u"ארועים/מופעים"
     CAT_MOVIES = u"סרטים"
-    IGNORED_CATEGORIES_LIST = [CAT_CHILDREN, CAT_DISPLAYS, CAT_MOVIES, ""]
+    IGNORED_CATEGORIES_LIST = [CAT_DISPLAYS, CAT_MOVIES, ""]
 
     def __init__(self, *a, **kw):
         super(MovieSpider, self).__init__(*a, **kw)

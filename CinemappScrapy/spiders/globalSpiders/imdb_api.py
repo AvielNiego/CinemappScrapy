@@ -60,7 +60,8 @@ class ImdbRequest:
                                                                                'movie_title': movie["eng_title"].encode(
                                                                                    'utf-8'),
                                                                                'imdb_id': imdb_data["imdbID"],
-                                                                               'imdb_title': imdb_data["Title"]}))
+                                                                               'imdb_title': imdb_data["Title"].encode(
+                                                                                   'utf-8')}))
         else:
             requests.get(MOVIE_MAPPING_URL + "add/cinema?" + urllib.urlencode({'movie_id': movie["movie_id"],
                                                                                'movie_title': movie["eng_title"].encode(
