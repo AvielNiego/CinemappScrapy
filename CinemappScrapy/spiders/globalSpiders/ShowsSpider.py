@@ -1,6 +1,7 @@
 import json
 from abc import abstractmethod
 
+import datetime
 import scrapy
 import time
 from scrapy.http import FormRequest
@@ -44,7 +45,22 @@ class ShowsSpider(scrapy.Spider):
         return venue_types[show_data["vt"]] if venue_types and venue_types[show_data['vt']] else "Normal"
 
     def get_show_date_millis(self, show_data):
+        show_time_date = self._get_show_time_date(show_data)
+        if show_time_date.hour <= 5:
+            show_time_date = self._add_day(show_time_date)
+        return self._unix_time_millis(show_time_date)
+
+    def _get_show_time_date(self, show_data):
         date = show_data['dt']
         show_time_string = date.split(" ")[0] + " " + show_data['tm']
         show_time_date = time.strptime(show_time_string, "%d/%m/%Y %H:%M")
-        return time.mktime(show_time_date) * 1000
+        return datetime.datetime.fromtimestamp(time.mktime(show_time_date))
+
+    def _add_day(self, show_time_date):
+        timedelta = datetime.timedelta(days=1)
+        show_time_date = show_time_date + timedelta
+        return show_time_date
+
+    def _unix_time_millis(self, dt):
+        epoch = datetime.datetime.utcfromtimestamp(0)
+        return (dt - epoch).total_seconds() * 1000.0
