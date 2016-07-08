@@ -31,7 +31,8 @@ GENRE_TRANSLATE = {
     "Mystery": u"תעלומה",
     "Sci-Fi": u"מדע בדיוני",
     "Thriller": u"מתח",
-    "Western": u"מערבון"}
+    "Western": u"מערבון",
+    "Short": u"קצר"}
 
 IMDB_API_URL = "http://www.omdbapi.com/"
 

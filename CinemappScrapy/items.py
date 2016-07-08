@@ -27,6 +27,7 @@ class TheaterItem(scrapy.Item):
     location = scrapy.Field(output_processor=TakeFirst())
     name = scrapy.Field(output_processor=TakeFirst())
     theater_id = scrapy.Field(output_processor=TakeFirst())
+    logo_url = scrapy.Field(output_processor=TakeFirst())
 
 
 class ShowItem(scrapy.Item):

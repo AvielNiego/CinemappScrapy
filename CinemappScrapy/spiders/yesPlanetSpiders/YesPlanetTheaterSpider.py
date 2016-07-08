@@ -5,6 +5,9 @@ from CinemappScrapy.spiders.yesPlanetSpiders.cookie_value import cookie
 
 
 class YesPlanetTheaterSpider(TheaterSpider):
+    def get_logo_url(self):
+        return "http://django-env.wpcqmjpmpv.us-west-2.elasticbeanstalk.com/static/theaters_logo/yes_planet_logo.jpg"
+
     name = "YesPlanet_Theater_Spider"
 
     def get_host(self):
