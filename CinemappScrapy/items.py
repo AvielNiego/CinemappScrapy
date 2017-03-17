@@ -31,7 +31,7 @@ class TheaterItem(scrapy.Item):
 
 
 class ShowItem(scrapy.Item):
-    pc = scrapy.Field(output_processor=TakeFirst())
+    ticket_url = scrapy.Field(output_processor=TakeFirst())
     venue_type = scrapy.Field(output_processor=TakeFirst())
     date = scrapy.Field(output_processor=TakeFirst())
     theater_id = scrapy.Field(output_processor=TakeFirst())

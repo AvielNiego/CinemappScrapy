@@ -7,7 +7,7 @@ from scrapy import Request
 
 from CinemappScrapy.items import MovieItem
 
-MOVIE_MAPPING_URL = "http://django-env.wpcqmjpmpv.us-west-2.elasticbeanstalk.com/movies/"
+MOVIE_MAPPING_URL = "http://cinemappebapp-env.us-west-2.elasticbeanstalk.com/movies/"
 
 GENRE_TRANSLATE = {
     "Action": u"אקשן",

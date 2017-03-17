@@ -11,7 +11,7 @@ class YesPlanetTheaterSpider(ShowsSpider):
         return "http://www.yesplanet.co.il"
 
     def get_shows_and_theater_data_url(self):
-        return "http://django-env.wpcqmjpmpv.us-west-2.elasticbeanstalk.com/yesplanet/presentations"
+        return "http://cinemappebapp-env.us-west-2.elasticbeanstalk.com/yesplanet/presentations"
 
     def start_requests(self):
         request = Request(self.get_shows_and_theater_data_url(), callback=self.parse,

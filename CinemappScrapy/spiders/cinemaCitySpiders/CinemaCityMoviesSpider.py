@@ -8,7 +8,6 @@ from scrapy.http import Request
 from scrapy.http import Response
 
 from CinemappScrapy.items import MovieItem
-from CinemappScrapy.spiders.globalSpiders.imdb_api import ImdbRequest
 
 
 class MovieSpider(scrapy.Spider):
@@ -31,7 +30,6 @@ class MovieSpider(scrapy.Spider):
     def __init__(self, *a, **kw):
         super(MovieSpider, self).__init__(*a, **kw)
         self._categories = []
-        self._imdb_request = ImdbRequest()
 
     def start_requests(self):
         request = FormRequest(self.MOVIES_URL,
@@ -58,7 +56,7 @@ class MovieSpider(scrapy.Spider):
 
     def get_parse_movie_request(self, movie_data):
         movie = MovieItem(movie_id=movie_data["ex"],
-                          title=movie_data["n"],
+                          title=self.clean_movie_name(movie_data["n"]),
                           year=movie_data["y_ds"],
                           genre=self.get_categories(movie_data["ex"]),
                           poster_url=self.CINEMA_CITY_POSTER_URL + movie_data["fn"],
@@ -66,6 +64,15 @@ class MovieSpider(scrapy.Spider):
                           length=movie_data["len"])
         return Request(self.MOVIE_DESCRIPTION_URL + "?featureCode=" + str(movie_data["ex"]),
                        callback=self.parse_movie, meta={"movie": movie}, dont_filter=True)
+
+    def clean_movie_name(self, movie_name):
+        """
+        :type movie_name: str
+        """
+        for sub in [u"אנגלית", u"אנגלי", u"מדובב"]:
+            if sub in movie_name:
+                movie_name = movie_name.replace(sub, "")
+        return movie_name.strip()
 
     def get_categories(self, movie_id):
         return [cat["n"] for cat in self._categories if self._is_movie_in_category(movie_id, cat)]
@@ -82,7 +89,8 @@ class MovieSpider(scrapy.Spider):
         movie["eng_title"] = self.get_eng_title(response)
         movie["summary"] = self.get_summary(response)
         movie["trailer"] = self.get_trailer(response)
-        yield self._imdb_request.get_request(movie)
+        # yield self._imdb_request.get_request(movie)
+        yield movie
 
     def get_summary(self, response):
         """

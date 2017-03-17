@@ -38,7 +38,8 @@ class TheaterSpider(scrapy.Spider):
         """
         all_movie_data = json.loads(response.body)
         for theater in self.extract_theaters(all_movie_data):
-            yield Request(self.generate_places_api_query(theater["name"]), meta={"theater_info": theater}, callback=self.parse_places_api)
+            yield theater
+            # yield Request(self.generate_places_api_query(theater["name"]), meta={"theater_info": theater}, callback=self.parse_places_api)
 
     def generate_places_api_query(self, theater_name):
         return self.GOOGLE_PLACES_API_SEARCH_PATH + "?key=" + self.API_KEY + "&query=" + theater_name + "&language=" + self.HEBREW_LANG_CODE

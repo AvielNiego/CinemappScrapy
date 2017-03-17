@@ -12,6 +12,10 @@ from CinemappScrapy.items import ShowItem
 class ShowsSpider(scrapy.Spider):
     name = 's'
 
+    def __init__(self, name='s', **kwargs):
+        super(ShowsSpider, self).__init__(name, **kwargs)
+        self.venue_types = []
+
     @abstractmethod
     def get_host(self):
         pass
@@ -28,21 +32,30 @@ class ShowsSpider(scrapy.Spider):
         :type response: Response
         """
         all_shows_data = json.loads(response.body)
-        venue_types = all_shows_data["venueTypes"]
+        self.venue_types = all_shows_data["venueTypes"]
         for theater_data in all_shows_data["sites"]:
+            ticket_url = theater_data["tu"] if "tu" in theater_data.keys() else self.get_hardcoded_ticket_url(
+                theater_data["si"])
             for movie_data in theater_data["fe"]:
                 for show_data in movie_data["pr"]:
-                    yield self.create_show(movie_data, show_data, theater_data, venue_types)
+                    yield self.create_show(movie_data, show_data, theater_data, ticket_url)
 
-    def create_show(self, movie_data, show_data, theater_data, venue_types):
+    def get_hardcoded_ticket_url(self, theater_id):
+        if theater_id == 1010004:
+            return "https://www.yesplanet.co.il/ecom?s=" + str(theater_id) + "&p=$PrsntCode$"
+        if theater_id == 1010005:
+            return "https://www.yesplanet.co.il/ecom?s=" + str(theater_id) + "&p=$PrsntCode$"
+        return ""
+
+    def create_show(self, movie_data, show_data, theater_data, ticket_url):
         return ShowItem(movie_id=movie_data["dc"],
                         theater_id=theater_data["si"],
-                        venue_type=self.get_show_type(show_data, venue_types),
+                        venue_type=self.get_show_type(show_data),
                         date=self.get_show_date_millis(show_data),
-                        pc=show_data["pc"])
+                        ticket_url=ticket_url.replace("$PrsntCode$", show_data["pc"]))
 
-    def get_show_type(self, show_data, venue_types):
-        return venue_types[show_data["vt"]] if venue_types and venue_types[show_data['vt']] else "Normal"
+    def get_show_type(self, show_data):
+        return self.venue_types[show_data["vt"]] if self.venue_types and self.venue_types[show_data['vt']] else "Normal"
 
     def get_show_date_millis(self, show_data):
         show_time_date = self._get_show_time_date(show_data)

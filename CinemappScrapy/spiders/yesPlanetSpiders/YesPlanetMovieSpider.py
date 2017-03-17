@@ -13,7 +13,7 @@ from CinemappScrapy.spiders.yesPlanetSpiders.cookie_value import cookie
 class YesPlanetMovieSpider(scrapy.Spider):
     name = "YesPlanet_Movies_Spider"
 
-    HOST = "http://django-env.wpcqmjpmpv.us-west-2.elasticbeanstalk.com/yesplanet/home"
+    HOST = "http://cinemappebapp-env.us-west-2.elasticbeanstalk.com/yesplanet/home"
 
     def start_requests(self):
         request = Request(self.HOST, callback=self.parse, cookies=cookie)
