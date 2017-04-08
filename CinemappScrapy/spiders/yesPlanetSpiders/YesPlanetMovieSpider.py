@@ -7,16 +7,15 @@ from scrapy.http import Response
 from scrapy.loader import ItemLoader
 
 from CinemappScrapy.items import MovieItem
-from CinemappScrapy.spiders.yesPlanetSpiders.cookie_value import cookie
 
 
 class YesPlanetMovieSpider(scrapy.Spider):
     name = "YesPlanet_Movies_Spider"
 
-    HOST = "http://cinemappebapp-env.us-west-2.elasticbeanstalk.com/yesplanet/home"
+    HOST = "http://104.199.113.249:5000"
 
     def start_requests(self):
-        request = Request(self.HOST, callback=self.parse, cookies=cookie)
+        request = Request(self.HOST, callback=self.parse)
         return [request]
 
     def parse(self, response):

@@ -31,7 +31,8 @@ class ShowsSpider(scrapy.Spider):
         """
         :type response: Response
         """
-        all_shows_data = json.loads(response.body)
+        body = str(response.body)
+        all_shows_data = json.loads(body[body.index('{'):body.rfind('}') + 1])
         self.venue_types = all_shows_data["venueTypes"]
         for theater_data in all_shows_data["sites"]:
             ticket_url = theater_data["tu"] if "tu" in theater_data.keys() else self.get_hardcoded_ticket_url(

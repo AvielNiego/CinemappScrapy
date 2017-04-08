@@ -2,7 +2,6 @@ import json
 from abc import abstractmethod
 
 import scrapy
-
 from scrapy.http import Request
 from scrapy.http import Response
 
@@ -36,7 +35,8 @@ class TheaterSpider(scrapy.Spider):
         """
         :type response: Response
         """
-        all_movie_data = json.loads(response.body)
+        body = str(response.body)
+        all_movie_data = json.loads(body[body.index('{'):body.rfind('}') + 1])
         for theater in self.extract_theaters(all_movie_data):
             yield theater
             # yield Request(self.generate_places_api_query(theater["name"]), meta={"theater_info": theater}, callback=self.parse_places_api)
