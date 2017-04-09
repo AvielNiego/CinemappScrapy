@@ -5,7 +5,6 @@ import datetime
 import scrapy
 import time
 from scrapy.http import FormRequest
-
 from CinemappScrapy.items import ShowItem
 
 
