@@ -1,4 +1,5 @@
 import json
+import urllib
 
 import scrapy
 
@@ -47,4 +48,4 @@ class YesPlanetMovieSpider(scrapy.Spider):
         return l.load_item()
 
     def get_end_title(self, url):
-        return url.split('/')[-1]
+        return urllib.unquote(url.split('/')[-1])
