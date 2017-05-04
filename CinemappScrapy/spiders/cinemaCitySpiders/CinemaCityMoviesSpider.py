@@ -9,6 +9,14 @@ from scrapy.http import Response
 
 from CinemappScrapy.items import MovieItem
 
+CAT_HORROR = u"אימה"
+CAT_ACTION = u"מתח/פעולה"
+CAT_DRAMA = u"דרמה/איכות"
+CAT_COMEDY = u"קומדיה/רומנטית"
+CAT_CHILDREN = u"ילדים"
+CAT_DISPLAYS = u"ארועים/מופעים"
+CAT_MOVIES = u"סרטים"
+
 
 class MovieSpider(scrapy.Spider):
     name = 'CinemaCity_Movies_Spider'
@@ -18,18 +26,8 @@ class MovieSpider(scrapy.Spider):
     MOVIE_DESCRIPTION_URL = "http://www.cinema-city.co.il/featureInfo"
     CINEMA_CITY_POSTER_URL = "http://ccil-media.internet-bee.com/Feats/med/"
 
-    CAT_HORROR = u"אימה"
-    CAT_ACTION = u"מתח/פעולה"
-    CAT_DRAMA = u"דרמה/איכות"
-    CAT_COMEDY = u"קומדיה/רומנטית"
-    CAT_CHILDREN = u"ילדים"
-    CAT_DISPLAYS = u"ארועים/מופעים"
-    CAT_MOVIES = u"סרטים"
-    IGNORED_CATEGORIES_LIST = [CAT_DISPLAYS, CAT_MOVIES, ""]
-
     def __init__(self, *a, **kw):
         super(MovieSpider, self).__init__(*a, **kw)
-        self._categories = []
 
     def start_requests(self):
         request = FormRequest(self.MOVIES_URL,
@@ -42,44 +40,19 @@ class MovieSpider(scrapy.Spider):
         :type response: Response
         """
         response_dict = json.loads(response.body)
-        self._categories = response_dict["cats"]
-        movies_data = self.get_relevant_movies(response_dict["schedFeat"])
-        for movie_data in movies_data:
+        for movie_data in response_dict["schedFeat"]:
             yield self.get_parse_movie_request(movie_data)
-
-    def get_relevant_movies(self, movies):
-        return [movie for movie in movies if self.has_relevant_categories(movie["ex"])]
-
-    def has_relevant_categories(self, movie_id):
-        movie_categories = set(self.get_categories(movie_id))
-        return len(movie_categories.intersection(self.IGNORED_CATEGORIES_LIST)) == 0
 
     def get_parse_movie_request(self, movie_data):
         movie = MovieItem(movie_id=movie_data["ex"],
-                          title=self.clean_movie_name(movie_data["n"]),
+                          title=movie_data["n"].strip(),
                           year=movie_data["y_ds"],
-                          genre=self.get_categories(movie_data["ex"]),
+                          genre=[],
                           poster_url=self.CINEMA_CITY_POSTER_URL + movie_data["fn"],
                           age_limit=movie_data["rn"],
                           length=movie_data["len"])
         return Request(self.MOVIE_DESCRIPTION_URL + "?featureCode=" + str(movie_data["ex"]),
                        callback=self.parse_movie, meta={"movie": movie}, dont_filter=True)
-
-    def clean_movie_name(self, movie_name):
-        """
-        :type movie_name: str
-        """
-        for sub in [u"אנגלית", u"אנגלי", u"מדובב"]:
-            if sub in movie_name:
-                movie_name = movie_name.replace(sub, "")
-        return movie_name.strip()
-
-    def get_categories(self, movie_id):
-        return [cat["n"] for cat in self._categories if self._is_movie_in_category(movie_id, cat)]
-
-    def _is_movie_in_category(self, movie_id, category):
-        movies_in_cat = category["FC"]
-        return movie_id in movies_in_cat and category["n"] != u"סרטים"
 
     def parse_movie(self, response):
         """
@@ -89,8 +62,14 @@ class MovieSpider(scrapy.Spider):
         movie["eng_title"] = self.get_eng_title(response)
         movie["summary"] = self.get_summary(response)
         movie["trailer"] = self.get_trailer(response)
-        # yield self._imdb_request.get_request(movie)
+        movie["genre"] = self.get_genre(response)
         yield movie
+
+    def get_genre(self, response):
+        """
+        :type response: Response
+        """
+        return [x.strip() for x in response.xpath("//div[@class='feature_info']/text()").extract()[0].replace(u'סיווג:', '').split('|')]
 
     def get_summary(self, response):
         """

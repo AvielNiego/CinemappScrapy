@@ -13,7 +13,7 @@ from CinemappScrapy.items import MovieItem
 class YesPlanetMovieSpider(scrapy.Spider):
     name = "YesPlanet_Movies_Spider"
 
-    HOST = "http://104.199.113.249:5000"
+    HOST = "http://35.185.234.255:5000"
 
     def start_requests(self):
         request = Request(self.HOST, callback=self.parse)
@@ -24,12 +24,13 @@ class YesPlanetMovieSpider(scrapy.Spider):
         :type response: Response
         """
         for movie_div_info in response.xpath('//*[@class="featuresCarouselExtended"]/div[2]/div/div[1]/ul/li/div'):
-            movie_id = json.loads(movie_div_info.xpath("@data-info").extract_first(default='{"distribcode": "1"}'))[
-                "distribcode"]
+            data_info = json.loads(movie_div_info.xpath("@data-info").extract_first(default='{"distribcode": "1"}'))
+            movie_id = data_info["distribcode"]
+            heb_name = urllib.unquote(data_info["urln"])
             movie_data_url = movie_div_info.xpath("@data-feature_url").extract_first()
-            yield self.parse_movie(movie_id, movie_data_url)
+            yield self.parse_movie(movie_id, movie_data_url, heb_name)
 
-    def parse_movie(self, movie_id, movie_data_url):
+    def parse_movie(self, movie_id, movie_data_url, heb_name):
         l = ItemLoader(item=MovieItem())
         l.add_value("movie_id", movie_id)
         l.add_value("year", "")
@@ -40,7 +41,7 @@ class YesPlanetMovieSpider(scrapy.Spider):
         l.add_value("length", "")
         l.add_value("summary", "")
         l.add_value("trailer", "")
-        l.add_value("title", "")
+        l.add_value("title", heb_name)
         l.add_value("poster_url", "")
         l.add_value("imdb_rating", "")
         l.add_value("imdb_rating", "")
