@@ -8,4 +8,4 @@ class CinemaCityTheaterSpider(TheaterSpider):
     name = "CinemaCity_Theater_Spider"
 
     def get_host(self):
-        return "http://cinema-city.co.il"
+        return "http://194.213.4.124"
