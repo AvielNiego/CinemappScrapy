@@ -21,9 +21,9 @@ CAT_MOVIES = u"סרטים"
 class MovieSpider(scrapy.Spider):
     name = 'CinemaCity_Movies_Spider'
 
-    CINEMA_CITY_MOBILE_HOST = "http://m.cinema-city.co.il"
+    CINEMA_CITY_MOBILE_HOST = "http://194.213.4.226"
     MOVIES_URL = CINEMA_CITY_MOBILE_HOST + "/refreshParam"
-    MOVIE_DESCRIPTION_URL = "http://www.cinema-city.co.il/featureInfo"
+    MOVIE_DESCRIPTION_URL = "http://194.213.4.124/featureInfo"
     CINEMA_CITY_POSTER_URL = "http://ccil-media.internet-bee.com/Feats/med/"
 
     def __init__(self, *a, **kw):
