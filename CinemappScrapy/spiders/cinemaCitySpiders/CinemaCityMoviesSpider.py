@@ -69,7 +69,11 @@ class MovieSpider(scrapy.Spider):
         """
         :type response: Response
         """
-        return [x.strip() for x in response.xpath("//div[@class='feature_info']/text()").extract()[0].replace(u'סיווג:', '').split('|')]
+        return [g.strip() for g in self._get_genres_string(response) if u'סרטים' not in g]
+
+    def _get_genres_string(self, response):
+        genre_string = response.xpath("//div[@class='feature_info']/text()").extract()[0]
+        return genre_string.replace(u'סיווג:', '').replace(u'\\', '').replace(u'/', '').split('|')
 
     def get_summary(self, response):
         """

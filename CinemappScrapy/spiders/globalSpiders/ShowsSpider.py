@@ -55,7 +55,7 @@ class ShowsSpider(scrapy.Spider):
                         ticket_url=ticket_url.replace("$PrsntCode$", show_data["pc"]))
 
     def get_show_type(self, show_data):
-        return self.venue_types[show_data["vt"]] if self.venue_types and self.venue_types[show_data['vt']] else "Normal"
+        return [self.venue_types[show_data["vt"]]] if self.venue_types and self.venue_types[show_data['vt']] else []
 
     def get_show_date_millis(self, show_data):
         show_time_date = self._get_show_time_date(show_data)
