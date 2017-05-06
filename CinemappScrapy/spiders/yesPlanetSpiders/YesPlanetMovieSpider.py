@@ -8,11 +8,14 @@ from scrapy.http import Response
 from scrapy.loader import ItemLoader
 
 from CinemappScrapy.items import MovieItem
+from CinemappScrapy.spiders.ravHen.rav_hen_movie_parser import RavHenMovieParser
+
+MOVIE_DESCRIPTION_URL = "http://rav-hen.co.il"
 
 
 class YesPlanetMovieSpider(scrapy.Spider):
     name = "YesPlanet_Movies_Spider"
-
+    handle_httpstatus_list = [404]
     HOST = "http://35.185.234.255:5000"
 
     def start_requests(self):
@@ -42,11 +45,11 @@ class YesPlanetMovieSpider(scrapy.Spider):
         l.add_value("summary", "")
         l.add_value("trailer", "")
         l.add_value("title", heb_name)
-        l.add_value("poster_url", "")
         l.add_value("imdb_rating", "")
         l.add_value("imdb_rating", "")
         l.add_value("genre", "")
-        return l.load_item()
+        return Request(MOVIE_DESCRIPTION_URL + movie_data_url, callback=RavHenMovieParser().parse_movie_details,
+                       meta={"movie": l.load_item()}, dont_filter=True)
 
     def get_end_title(self, url):
         return urllib.unquote(url.split('/')[-1])

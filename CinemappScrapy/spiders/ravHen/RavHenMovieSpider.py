@@ -1,13 +1,16 @@
+# coding=utf-8
 import json
 import urllib
 
 import scrapy
-
 from scrapy import Request
 from scrapy.http import Response
 from scrapy.loader import ItemLoader
 
 from CinemappScrapy.items import MovieItem
+from CinemappScrapy.spiders.ravHen.rav_hen_movie_parser import RavHenMovieParser
+
+MOVIE_DESCRIPTION_URL = "http://rav-hen.co.il"
 
 
 class RavHenMovieSpider(scrapy.Spider):
@@ -42,11 +45,10 @@ class RavHenMovieSpider(scrapy.Spider):
         l.add_value("summary", "")
         l.add_value("trailer", "")
         l.add_value("title", heb_name)
-        l.add_value("poster_url", "")
         l.add_value("imdb_rating", "")
         l.add_value("imdb_rating", "")
-        l.add_value("genre", "")
-        return l.load_item()
+        return Request(MOVIE_DESCRIPTION_URL + movie_data_url, callback=RavHenMovieParser().parse_movie_details,
+                       meta={"movie": l.load_item()}, dont_filter=True)
 
     def get_end_title(self, url):
         return urllib.unquote(url.split('/')[-1])
