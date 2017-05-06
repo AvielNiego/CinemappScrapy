@@ -5,7 +5,7 @@ from CinemappScrapy.spiders.globalSpiders.TheaterSpider import TheaterSpider
 
 class RavHenTheaterSpider(TheaterSpider):
     def get_logo_url(self):
-        return "http://cinemappebapp-env.us-west-2.elasticbeanstalk.com/static/theaters_logo/yes_planet_logo.jpg"
+        return "http://www.rav-hen.co.il/media/iti_rh/imgs/favicon.gif"
 
     name = "RavHen_Theater_Spider"
 
