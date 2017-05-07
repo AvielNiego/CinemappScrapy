@@ -21,18 +21,18 @@ CAT_MOVIES = u"סרטים"
 class MovieSpider(scrapy.Spider):
     name = 'CinemaCity_Movies_Spider'
 
-    CINEMA_CITY_MOBILE_HOST = "http://194.213.4.226"
-    MOVIES_URL = CINEMA_CITY_MOBILE_HOST + "/refreshParam"
-    MOVIE_DESCRIPTION_URL = "http://194.213.4.124/featureInfo"
+    CINEMA_CITY_MOBILE_HOST = "http://91.202.171.158:5000/mobile"
+    # MOVIES_URL = CINEMA_CITY_MOBILE_HOST + "/refreshParam"
+    MOVIES_URL = "http://91.202.171.158:5000/refreshParam"
+    MOVIE_DESCRIPTION_URL = "http://91.202.171.158:5000/featureInfo"
+    MOVIE_DATA_URL = "http://91.202.171.158:5000/movieData/"
     CINEMA_CITY_POSTER_URL = "http://ccil-media.internet-bee.com/Feats/med/"
 
     def __init__(self, *a, **kw):
         super(MovieSpider, self).__init__(*a, **kw)
 
     def start_requests(self):
-        request = FormRequest(self.MOVIES_URL,
-                              formdata={"refreshFlg": "1", "timeStamp": str((int(round(time.time() * 1000))))},
-                              callback=self.parse)
+        request = Request(self.MOVIES_URL, callback=self.parse)
         return [request]
 
     def parse(self, response):
@@ -51,7 +51,7 @@ class MovieSpider(scrapy.Spider):
                           poster_url=self.CINEMA_CITY_POSTER_URL + movie_data["fn"],
                           age_limit=movie_data["rn"],
                           length=movie_data["len"])
-        return Request(self.MOVIE_DESCRIPTION_URL + "?featureCode=" + str(movie_data["ex"]),
+        return Request(self.MOVIE_DATA_URL + str(movie_data["ex"]),
                        callback=self.parse_movie, meta={"movie": movie}, dont_filter=True)
 
     def parse_movie(self, response):
