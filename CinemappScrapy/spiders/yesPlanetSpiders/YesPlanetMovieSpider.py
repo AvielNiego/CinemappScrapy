@@ -16,7 +16,7 @@ MOVIE_DESCRIPTION_URL = "http://rav-hen.co.il"
 class YesPlanetMovieSpider(scrapy.Spider):
     name = "YesPlanet_Movies_Spider"
     handle_httpstatus_list = [404]
-    HOST = "http://35.185.234.255:5000"
+    HOST = "http://35.185.230.193:5000"
 
     def start_requests(self):
         request = Request(self.HOST, callback=self.parse)
